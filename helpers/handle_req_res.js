@@ -1,6 +1,7 @@
 // dependencies
 
 const { StringDecoder } = require('string_decoder');
+const routes = require('../routes');
 // app object - module scafolding
 const handler = {};
 
@@ -13,9 +14,32 @@ handler.handleReqRes = (req, res) => {
     const headerObject = req.headers;
 
     const decoder = new StringDecoder();
+    const requestProperties = {
+        parseUrl,
+        path,
+        trimedPath,
+        method,
+        queryParms,
+        headerObject,
+    };
 
+    const chosenHandler = routes[trimedPath] ? routes[trimedPath] : routes.notFound;
+
+    chosenHandler(requestProperties, (statuscode, payload) => {
+        let statusCode = statuscode;
+        let payLoad = payload;
+        statusCode = typeof statusCode === 'number' ? statusCode : 500;
+        payLoad = typeof payLoad === 'object' ? payLoad : {};
+
+        const payLoadString = JSON.stringify(payLoad);
+
+        // return the final response
+        res.writeHead(statusCode);
+        res.end(payLoadString);
+    });
+
+    // body
     let bodyData = '';
-
     req.on('data', (buffer) => {
         bodyData += decoder.write(buffer);
     });
