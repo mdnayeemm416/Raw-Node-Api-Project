@@ -9,4 +9,14 @@ handler.sampleHandler = (requestProperties, callBack) => {
     });
 };
 
+handler.aboutHandler = (requestProperties, callBack) => {
+    callBack(200, {
+        message: 'Success',
+        statusCode: 200,
+        data: {
+            aboutOurself: '',
+        },
+    });
+};
+
 module.exports = handler;
